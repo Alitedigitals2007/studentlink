@@ -951,6 +951,16 @@ app.post('/admin/delete-session/:id', isAdmin, async (req, res) => {
         res.status(500).send("Could not delete session. It might have active attempts linked to it.");
     }
 });
+
+// Add this at the end of app.js
+app.use((err, req, res, next) => {
+  res.status(500).json({
+    message: "Alite, the server crashed!",
+    error: err.message,
+    stack: err.stack
+  });
+});
+
 const PORT = 3000;
 app.listen(PORT, () => {
     console.log(`🚀 Student Link is running on http://localhost:${PORT}`);
