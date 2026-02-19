@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Suggest Event | Student Link</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap');
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background: #fdfdfd; }
+        .input-group { border-bottom: 2px solid #f1f5f9; transition: all 0.3s ease; }
+        .input-group:focus-within { border-color: #008080; }
+        
+        /* Custom styling for the upload box */
+        #upload-preview {
+            display: none;
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+            border-radius: 1rem;
+            margin-top: 0.5rem;
+        }
+    </style>
+</head>
+<body class="text-slate-900">
+    <div class="max-w-md mx-auto p-6">
+        <header class="flex items-center justify-between mb-10">
+            <a href="/events" class="w-10 h-10 bg-white shadow-sm rounded-xl flex items-center justify-center text-slate-400">
+                <i class="fa-solid fa-chevron-left"></i>
+            </a>
+            <h1 class="text-lg font-extrabold tracking-tight">Post an Event</h1>
+            <div class="w-10"></div>
+        </header>
+
+        <form action="/events/add" method="POST" enctype="multipart/form-data" class="space-y-6">
+            <div class="bg-white p-8 rounded-[2.5rem] shadow-xl shadow-slate-200/50 border border-slate-50 space-y-6">
+                
+                <div class="input-group">
+                    <label class="text-[9px] font-black text-teal-600 uppercase tracking-widest">Event Title</label>
+                    <input type="text" name="title" required placeholder="e.g. Faculty Gala Night" class="w-full py-3 outline-none text-sm font-semibold bg-transparent">
+                </div>
+                
+                <div class="flex gap-4">
+                    <div class="input-group flex-1">
+                        <label class="text-[9px] font-black text-teal-600 uppercase tracking-widest">Date</label>
+                        <input type="date" name="date" required class="w-full py-3 outline-none text-sm font-semibold bg-transparent text-slate-500">
+                    </div>
+                    <div class="input-group flex-1">
+                        <label class="text-[9px] font-black text-teal-600 uppercase tracking-widest">Location</label>
+                        <input type="text" name="location" required placeholder="Hall A" class="w-full py-3 outline-none text-sm font-semibold bg-transparent">
+                    </div>
+                </div>
+
+                <div class="input-group border-none">
+                    <label class="text-[9px] font-black text-teal-600 uppercase tracking-widest">Event Poster (Upload)</label>
+                    <div class="mt-2">
+                        <label for="event_image" class="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-slate-100 rounded-3xl cursor-pointer hover:bg-slate-50 hover:border-teal-200 transition-all">
+                            <div class="flex flex-col items-center justify-center pt-5 pb-6" id="upload-placeholder">
+                                <i class="fa-solid fa-image text-slate-300 text-2xl mb-2"></i>
+                                <p class="text-[10px] text-slate-400 font-bold uppercase">Tap to select photo</p>
+                            </div>
+                            <img id="upload-preview" src="#" alt="Preview" />
+                            <input id="event_image" name="event_image" type="file" class="hidden" accept="image/*" onchange="previewImage(this)" />
+                        </label>
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <label class="text-[9px] font-black text-teal-600 uppercase tracking-widest">Registration Link</label>
+                    <input type="url" name="link" placeholder="https://..." class="w-full py-3 outline-none text-sm font-semibold bg-transparent">
+                </div>
+
+                <div>
+                    <label class="text-[9px] font-black text-teal-600 uppercase tracking-widest">Short Description</label>
+                    <textarea name="description" rows="3" placeholder="Tell everyone why they should come..." class="w-full border-2 border-slate-50 rounded-2xl p-4 mt-2 text-sm outline-none focus:border-teal-600 bg-slate-50 transition-all"></textarea>
+                </div>
+            </div>
+
+            <div class="px-4 text-center">
+                <p class="text-[10px] text-slate-400 italic leading-relaxed">
+                    Note: If you are **Alite**, this will be published for everyone instantly.
+                </p>
+            </div>
+            
+            <button type="submit" class="w-full bg-slate-900 text-white py-5 rounded-[2rem] font-extrabold shadow-xl shadow-slate-900/20 active:scale-95 transition-all">
+                Publish Event
+            </button>
+        </form>
+    </div>
+
+    <script>
+        function previewImage(input) {
+            const preview = document.getElementById('upload-preview');
+            const placeholder = document.getElementById('upload-placeholder');
+            
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                
+                reader.onload = function(e) {
+                    preview.src = e.target.result;
+                    preview.style.display = 'block';
+                    placeholder.style.display = 'none';
+                }
+                
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+    </script>
+</body>
+</html>

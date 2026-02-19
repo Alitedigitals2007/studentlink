@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Events | Alite Command</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;500;700&display=swap');
+        body { 
+            font-family: 'Space Grotesk', sans-serif; 
+            background: #0f172a; 
+            color: white; 
+            min-height: 100vh;
+        }
+        .glass-card { 
+            background: rgba(30, 41, 59, 0.7); 
+            backdrop-filter: blur(12px); 
+            border: 1px solid rgba(255,255,255,0.05); 
+        }
+        .status-badge {
+            font-size: 8px;
+            letter-spacing: 0.1em;
+            padding: 2px 8px;
+            border-radius: 99px;
+            text-transform: uppercase;
+            font-weight: 700;
+        }
+    </style>
+</head>
+<body class="p-6">
+
+    <header class="flex items-center justify-between mb-10 max-w-2xl mx-auto">
+        <div class="flex items-center gap-4">
+            <a href="/admin/dashboard" class="w-10 h-10 glass-card rounded-xl flex items-center justify-center text-slate-400 hover:text-cyan-400 transition-colors">
+                <i class="fa-solid fa-chevron-left"></i>
+            </a>
+            <div>
+                <h1 class="text-xl font-bold tracking-tight">Event Moderator</h1>
+                <p class="text-[10px] text-slate-500 uppercase tracking-widest font-bold">Approve or Reject</p>
+            </div>
+        </div>
+        <div class="text-right">
+            <div class="text-cyan-400 text-xs font-bold uppercase tracking-tighter">
+                <%= events.filter(e => !e.is_approved).length %> Pending
+            </div>
+        </div>
+    </header>
+
+    <div class="space-y-6 max-w-2xl mx-auto">
+        <% if (events && events.length > 0) { %>
+            <% events.forEach(event => { %>
+                <div class="glass-card rounded-[2.5rem] overflow-hidden relative group">
+                    <% if(!event.is_approved) { %>
+                        <div class="absolute left-0 top-0 bottom-0 w-1.5 bg-yellow-500"></div>
+                    <% } else { %>
+                        <div class="absolute left-0 top-0 bottom-0 w-1.5 bg-emerald-500"></div>
+                    <% } %>
+
+                    <% if(event.event_image) { %>
+                        <div class="w-full h-44 overflow-hidden">
+                            <img src="<%= event.event_image %>" class="w-full h-full object-cover opacity-80" alt="Event Image">
+                        </div>
+                    <% } %>
+
+                    <div class="p-6">
+                        <div class="flex justify-between items-start mb-4">
+                            <div class="flex-1 pr-4">
+                                <div class="flex items-center gap-2 mb-1">
+                                    <h3 class="font-bold text-white text-lg leading-tight"><%= event.title %></h3>
+                                    <% if(!event.is_approved) { %>
+                                        <span class="status-badge bg-yellow-500/10 text-yellow-500 border border-yellow-500/20">Pending</span>
+                                    <% } else { %>
+                                        <span class="status-badge bg-emerald-500/10 text-emerald-500 border border-emerald-500/20">Active</span>
+                                    <% } %>
+                                </div>
+                                <div class="flex flex-wrap gap-x-4 gap-y-1 mt-2">
+                                    <p class="text-[11px] text-cyan-400 font-bold flex items-center gap-1">
+                                        <i class="fa-solid fa-calendar text-[10px]"></i> 
+                                        <%= new Date(event.event_date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) %>
+                                    </p>
+                                    <p class="text-[11px] text-slate-400 flex items-center gap-1 uppercase tracking-widest">
+                                        <i class="fa-solid fa-school text-[10px]"></i> 
+                                        <%= event.uni_name %>
+                                    </p>
+                                </div>
+                            </div>
+
+                            <div class="flex gap-2">
+                                <% if(!event.is_approved) { %>
+                                    <form action="/admin/approve-event/<%= event.id %>" method="POST">
+                                        <button class="w-11 h-11 bg-emerald-500/10 text-emerald-500 border border-emerald-500/20 rounded-2xl hover:bg-emerald-500 hover:text-white transition-all active:scale-90 shadow-lg shadow-emerald-500/5">
+                                            <i class="fa-solid fa-check"></i>
+                                        </button>
+                                    </form>
+                                <% } %>
+
+                                <form action="/admin/delete-event/<%= event.id %>" method="POST" onsubmit="return confirm('Confirm Rejection/Deletion?')">
+                                    <button class="w-11 h-11 bg-rose-500/10 text-rose-500 border border-rose-500/20 rounded-2xl hover:bg-rose-500 hover:text-white transition-all active:scale-90 shadow-lg shadow-rose-500/5">
+                                        <i class="fa-solid fa-trash-can"></i>
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+
+                        <div class="mt-4 pt-4 border-t border-white/5">
+                            <div class="flex items-center justify-between mb-2">
+                                <div class="flex items-center gap-2">
+                                    <i class="fa-solid fa-location-dot text-rose-500 text-[10px]"></i>
+                                    <span class="text-xs font-bold text-slate-300 uppercase tracking-widest"><%= event.location %></span>
+                                </div>
+                                <% if(event.event_link) { %>
+                                    <a href="<%= event.event_link %>" target="_blank" class="text-[10px] text-cyan-400 hover:underline">
+                                        <i class="fa-solid fa-link"></i> External Link
+                                    </a>
+                                <% } %>
+                            </div>
+                            <div class="bg-slate-900/40 p-4 rounded-2xl border border-white/5">
+                                <p class="text-xs text-slate-400 leading-relaxed font-medium">
+                                    <%= event.description || "No description provided for this event." %>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            <% }) %>
+        <% } else { %>
+            <div class="glass-card p-12 rounded-[3rem] text-center border-2 border-dashed border-slate-800">
+                <div class="w-20 h-20 bg-slate-800 rounded-full flex items-center justify-center mx-auto mb-4 text-slate-600">
+                    <i class="fa-solid fa-calendar-xmark text-3xl"></i>
+                </div>
+                <h3 class="font-bold text-slate-400">No events found</h3>
+                <p class="text-xs text-slate-600 mt-1">Events submitted by students will appear here for review.</p>
+            </div>
+        <% } %>
+    </div>
+
+    <footer class="mt-12 flex justify-center pb-10">
+        <div class="px-4 py-2 bg-slate-800/30 rounded-full border border-slate-700/50 flex items-center gap-3">
+            <div class="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></div>
+            <span class="text-[9px] font-black uppercase tracking-[0.2em] text-slate-500">Alite System v2.0 Online</span>
+        </div>
+    </footer>
+
+</body>
+</html>

@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Link | Timeline</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background: #f8fafc; padding-bottom: 100px; }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .badge-count { 
+            position: absolute; top: -5px; right: -5px; 
+            background: #ef4444; color: white; font-size: 9px; 
+            font-weight: 800; min-width: 16px; height: 16px; 
+            display: flex; align-items: center; justify-content: center; 
+            border-radius: 50%; border: 2px solid white;
+        }
+    </style>
+</head>
+<body class="text-slate-900">
+
+    <header class="sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b border-slate-200 px-5 py-4 flex justify-between items-center">
+        <div class="flex items-center gap-3">
+            <div class="w-10 h-10 bg-teal-800 rounded-xl flex items-center justify-center text-white font-black text-xl rotate-3 shadow-lg">S</div>
+            <h1 class="text-xl font-extrabold tracking-tighter text-teal-900">Link<span class="text-orange-500">.</span></h1>
+            
+            <% if (user.whatsapp === '09154681851') { %>
+                <a href="/admin/dashboard" title="Admin Dashboard" class="w-8 h-8 bg-slate-100 rounded-lg flex items-center justify-center text-teal-700 hover:bg-teal-700 hover:text-white transition-all">
+                    <i class="fa-solid fa-gauge-high text-xs"></i>
+                </a>
+            <% } %>
+        </div>
+        
+        <div class="flex items-center gap-4">
+            <a href="/events" class="text-slate-400 hover:text-orange-600 transition-all">
+                <i class="fa-solid fa-calendar-check text-xl"></i>
+            </a>
+
+            <a href="/notifications" class="relative text-slate-400 hover:text-teal-700">
+                <i class="fa-solid fa-bell text-xl"></i>
+                <% if(locals.notifCount > 0) { %> <span class="badge-count"><%= notifCount %></span> <% } %>
+            </a>
+
+            <a href="/logout" class="text-slate-400 hover:text-rose-500 transition-colors">
+                <i class="fa-solid fa-power-off text-lg"></i>
+            </a>
+        </div>
+    </header>
+
+    <main class="max-w-md mx-auto px-4 pt-6">
+
+        <% if (locals.events && events.length > 0) { %>
+        <section class="mb-8">
+            <h3 class="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-3 px-1">Upcoming Events</h3>
+            <div class="flex gap-4 overflow-x-auto no-scrollbar pb-2">
+                <% events.forEach(event => { %>
+                    <div class="min-w-[240px] bg-gradient-to-br from-teal-700 to-teal-900 p-5 rounded-[2rem] text-white shadow-lg shadow-teal-900/20">
+                        <span class="text-[9px] font-black bg-white/20 px-3 py-1.5 rounded-full uppercase">
+                            <%= new Date(event.event_date).toDateString() %>
+                        </span>
+                        <h4 class="font-bold text-base mt-4 truncate"><%= event.title %></h4>
+                        <p class="text-[10px] text-teal-100/70 mt-2"><i class="fa-solid fa-location-dot mr-1"></i> <%= event.location %></p>
+                    </div>
+                <% }) %>
+            </div>
+        </section>
+        <% } %>
+
+        <section class="mb-8 bg-white rounded-[2.5rem] p-5 shadow-sm border border-slate-100">
+            <form action="/post" method="POST" enctype="multipart/form-data">
+                <div class="flex gap-4">
+                    <img src="<%= user.profile_pic %>" class="w-12 h-12 rounded-2xl object-cover">
+                    <textarea name="content" required placeholder="What's the update, <%= user.fullname.split(' ')[0] %>?" class="w-full pt-3 text-sm outline-none resize-none bg-transparent" rows="2"></textarea>
+                </div>
+                
+                <div id="preview-container" class="mt-3 hidden relative">
+                    <img id="post-preview" class="w-full h-48 object-cover rounded-[1.5rem] border">
+                    <button type="button" onclick="clearPreview()" class="absolute top-2 right-2 bg-black/50 text-white w-7 h-7 rounded-full flex items-center justify-center backdrop-blur-md">&times;</button>
+                </div>
+
+                <div class="flex items-center justify-between mt-4 pt-4 border-t border-slate-50">
+                    <button type="button" onclick="document.getElementById('post-file').click()" class="flex items-center gap-2 text-slate-400 hover:text-teal-600 transition-all text-sm font-medium">
+                        <i class="fa-solid fa-camera text-xl"></i>
+                        <span class="text-[10px] font-bold uppercase tracking-widest">Media</span>
+                    </button>
+                    <input type="file" id="post-file" name="post_media" class="hidden" accept="image/*" onchange="previewImage(this)">
+                    
+                    <button type="submit" class="bg-teal-800 text-white px-8 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest shadow-xl shadow-teal-900/20 active:scale-95 transition-all">
+                        Post Feed
+                    </button>
+                </div>
+            </form>
+        </section>
+
+        <div class="space-y-6">
+            <% posts.forEach(post => { %>
+                <div class="bg-white rounded-[2.5rem] p-6 shadow-sm border border-slate-100">
+                    <div class="flex items-center justify-between mb-4">
+                        <a href="/profile/<%= post.user_id %>" class="flex items-center gap-3">
+                            <img src="<%= post.profile_pic %>" class="w-11 h-11 rounded-2xl object-cover ring-2 ring-slate-50 shadow-sm">
+                            <div>
+                                <h3 class="text-sm font-black text-slate-900"><%= post.fullname %></h3>
+                                <p class="text-[9px] text-slate-400 font-bold uppercase"><%= post.university %></p>
+                            </div>
+                        </a>
+                    </div>
+
+                    <p class="text-slate-600 text-sm mb-4 leading-relaxed"><%= post.content %></p>
+
+                    <% if (post.media_url) { %>
+                        <div class="rounded-[2rem] overflow-hidden mb-4 shadow-sm bg-slate-50">
+                            <img src="<%= post.media_url %>" class="w-full object-cover max-h-96">
+                        </div>
+                    <% } %>
+
+                    <div class="flex items-center gap-6 pt-3 border-t border-slate-50">
+                        <button onclick="likePost('<%= post.id %>')" class="flex items-center gap-2 transition-all">
+                            <i class="fa-solid fa-heart <%= post.user_has_liked ? 'text-rose-500' : 'text-slate-300' %>" id="heart-<%= post.id %>"></i>
+                            <span class="text-[11px] font-black text-slate-500" id="like-count-<%= post.id %>"><%= post.like_count || 0 %></span>
+                        </button>
+
+                        <button onclick="toggleComments('<%= post.id %>')" class="flex items-center gap-2 text-slate-400 hover:text-teal-600">
+                            <i class="fa-solid fa-comment-dots"></i>
+                            <span class="text-[11px] font-black">Discuss</span>
+                        </button>
+                    </div>
+
+                    <div id="comment-box-<%= post.id %>" class="hidden mt-4 pt-4 border-t border-slate-50">
+                        <div id="comments-list-<%= post.id %>" class="space-y-3 mb-4 max-h-40 overflow-y-auto no-scrollbar"></div>
+                        <div class="flex gap-2">
+                            <input type="text" id="input-<%= post.id %>" placeholder="Your comment..." class="flex-1 bg-slate-50 p-3 rounded-2xl text-xs outline-none">
+                            <button onclick="addComment('<%= post.id %>')" class="bg-teal-700 text-white px-5 rounded-2xl text-[10px] font-bold">Send</button>
+                        </div>
+                    </div>
+                </div>
+            <% }) %>
+        </div>
+    </main>
+
+    <nav class="fixed bottom-0 left-0 right-0 bg-white/90 backdrop-blur-xl border-t border-slate-100 px-6 py-4 flex justify-between items-end z-[100]">
+        <a href="/timeline" class="flex flex-col items-center gap-1 text-teal-700">
+            <i class="fa-solid fa-house-chimney text-xl"></i>
+            <span class="text-[9px] font-black uppercase">Home</span>
+        </a>
+        <a href="/friends" class="flex flex-col items-center gap-1 text-slate-400 relative">
+            <i class="fa-solid fa-user-group text-xl"></i>
+            <span class="text-[9px] font-black uppercase">Network</span>
+            <% if(locals.friendRequests > 0) { %> <span class="badge-count"><%= friendRequests %></span> <% } %>
+        </a>
+        <a href="/dashboard" class="relative -top-8 group">
+            <div class="bg-orange-500 w-16 h-16 rounded-[2.2rem] flex items-center justify-center text-white border-4 border-white shadow-lg shadow-orange-500/30 active:scale-90 transition-all">
+                <i class="fa-solid fa-brain text-2xl"></i>
+            </div>
+        </a>
+        <a href="/resources" class="flex flex-col items-center gap-1 text-slate-400">
+            <i class="fa-solid fa-vault text-xl"></i>
+            <span class="text-[9px] font-black uppercase">Vault</span>
+        </a>
+        <a href="/profile/<%= user.id %>" class="flex flex-col items-center gap-1 text-slate-400">
+            <img src="<%= user.profile_pic %>" class="w-6 h-6 rounded-full grayscale opacity-70">
+            <span class="text-[9px] font-black uppercase">Me</span>
+        </a>
+    </nav>
+
+    <script>
+        function previewImage(input) {
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = e => {
+                    document.getElementById('post-preview').src = e.target.result;
+                    document.getElementById('preview-container').classList.remove('hidden');
+                }
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+        function clearPreview() {
+            document.getElementById('post-file').value = '';
+            document.getElementById('preview-container').classList.add('hidden');
+        }
+        async function likePost(postId) {
+            const res = await fetch(`/like/${postId}`, { method: 'POST' });
+            const data = await res.json();
+            const heart = document.getElementById(`heart-${postId}`);
+            const count = document.getElementById(`like-count-${postId}`);
+            heart.classList.toggle('text-rose-500', data.liked);
+            heart.classList.toggle('text-slate-300', !data.liked);
+            count.innerText = data.count;
+        }
+        function toggleComments(id) { document.getElementById(`comment-box-${id}`).classList.toggle('hidden'); }
+        async function addComment(postId) {
+            const input = document.getElementById(`input-${postId}`);
+            if(!input.value) return;
+            const res = await fetch(`/comment/${postId}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ content: input.value })
+            });
+            if(res.ok) {
+                const list = document.getElementById(`comments-list-${postId}`);
+                list.innerHTML += `<div class="text-[11px] bg-slate-50 p-2 rounded-xl text-slate-600"><span class="font-bold text-teal-800">You:</span> ${input.value}</div>`;
+                input.value = '';
+            }
+        }
+    </script>
+</body>
+</html>

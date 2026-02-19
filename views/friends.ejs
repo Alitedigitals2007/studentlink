@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Network | The Hub</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background: #f8fafc; padding-bottom: 110px; }
+        .glass-header { background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(12px); border-bottom: 1px solid rgba(0,0,0,0.05); }
+        .nav-item { color: #94a3b8; transition: all 0.3s ease; }
+        .nav-active { color: #008080 !important; }
+        .tab-btn { transition: all 0.3s ease; border-bottom: 2px solid transparent; }
+        .tab-active { border-color: #008080; color: #008080; }
+        
+        /* Notification Badge for Bottom Nav */
+        .badge-main { position: absolute; top: -4px; right: -4px; background: #ef4444; color: white; font-size: 7px; font-weight: 900; width: 15px; height: 15px; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 2px solid white; box-shadow: 0 2px 4px rgba(239, 68, 68, 0.3); }
+        
+        /* Orange dot for Tabs */
+        .dot-indicator { position: absolute; top: 0; right: -10px; width: 6px; height: 6px; background: #f97316; border-radius: 50%; }
+        
+        .profile-card { transition: transform 0.2s ease; border: 1px solid #f1f5f9; }
+        .profile-card:active { transform: scale(0.95); }
+    </style>
+</head>
+<body class="text-slate-900">
+
+    <header class="sticky top-0 z-50 glass-header px-6 py-4 flex justify-between items-center">
+        <h1 class="text-xl font-extrabold tracking-tighter text-teal-900">Connect<span class="text-orange-500">.</span></h1>
+        <div class="flex gap-4">
+             <a href="/notifications" class="relative text-slate-400">
+                <i class="fa-solid fa-bell text-xl"></i>
+             </a>
+        </div>
+    </header>
+
+    <main class="max-w-md mx-auto px-5 pt-6">
+        
+        <div class="mb-8">
+            <form action="/friends" method="GET" class="relative">
+                <input type="text" name="search" placeholder="Search school, name or level..." 
+                    class="w-full p-4 pl-12 rounded-[2rem] bg-white border border-slate-100 shadow-sm text-sm outline-none focus:ring-2 focus:ring-teal-500/20">
+                <i class="fa-solid fa-magnifying-glass absolute left-5 top-1/2 -translate-y-1/2 text-slate-300"></i>
+            </form>
+        </div>
+
+        <div class="flex gap-10 mb-8 px-2">
+            <button onclick="switchTab('network')" id="net-tab" class="tab-btn tab-active pb-2 text-xs font-black uppercase tracking-widest relative">
+                Network
+                <% if (locals.friendCount > 0) { %>
+                    <span class="dot-indicator animate-bounce"></span>
+                <% } %>
+            </button>
+            <button onclick="switchTab('chats')" id="chat-tab" class="tab-btn pb-2 text-xs font-black uppercase tracking-widest text-slate-400 relative">
+                Chats
+                <% if (locals.msgCount > 0) { %>
+                    <span class="dot-indicator animate-pulse"></span>
+                <% } %>
+            </button>
+        </div>
+
+        <div id="network-view">
+            <% if (requests && requests.length > 0) { %>
+            <section class="mb-10">
+                <h3 class="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-4">Requests Received</h3>
+                <div class="space-y-3">
+                    <% requests.forEach(req => { %>
+                        <div class="bg-white p-4 rounded-[2rem] border border-slate-100 flex items-center justify-between shadow-sm">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 bg-orange-100 rounded-2xl flex items-center justify-center font-bold text-orange-600">
+                                    <%= req.fullname.charAt(0) %>
+                                </div>
+                                <div>
+                                    <p class="text-sm font-bold text-slate-900"><%= req.fullname %></p>
+                                    <p class="text-[10px] text-teal-600 font-bold uppercase"><%= req.university %></p>
+                                </div>
+                            </div>
+                            <div class="flex gap-2">
+                                <form action="/friends/accept/<%= req.request_id %>" method="POST">
+                                    <button class="w-9 h-9 bg-teal-800 text-white rounded-xl"><i class="fa-solid fa-check text-xs"></i></button>
+                                </form>
+                                <form action="/friends/reject/<%= req.request_id %>" method="POST">
+                                    <button class="w-9 h-9 bg-slate-100 text-slate-400 rounded-xl"><i class="fa-solid fa-xmark text-xs"></i></button>
+                                </form>
+                            </div>
+                        </div>
+                    <% }) %>
+                </div>
+            </section>
+            <% } %>
+
+            <section class="mb-10">
+                <h3 class="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-4">Discover Students</h3>
+                <div class="grid grid-cols-2 gap-4">
+                    <% users.forEach(person => { %>
+                        <a href="/profile/<%= person.id %>" class="profile-card bg-white p-5 rounded-[2.5rem] text-center shadow-sm block">
+                            <div class="relative w-16 h-16 mx-auto mb-3">
+                                <div class="w-full h-full bg-slate-50 rounded-[1.8rem] flex items-center justify-center font-bold text-slate-400">
+                                    <%= person.fullname.charAt(0) %>
+                                </div>
+                                <% if(person.is_verified) { %>
+                                    <div class="absolute -bottom-1 -right-1 bg-white rounded-full p-0.5">
+                                        <i class="fa-solid fa-circle-check text-blue-500 text-xs"></i>
+                                    </div>
+                                <% } %>
+                            </div>
+                            <p class="text-xs font-extrabold text-slate-900 truncate"><%= person.fullname %></p>
+                            <p class="text-[9px] text-slate-400 font-bold uppercase truncate"><%= person.university %></p>
+                            <div class="mt-3 text-[9px] font-black text-teal-600 uppercase pt-3 border-t border-slate-50">View Profile</div>
+                        </a>
+                    <% }) %>
+                </div>
+            </section>
+
+            <section class="mb-6">
+                <h3 class="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-4">My Connections</h3>
+                <div class="space-y-3">
+                    <% if (friends && friends.length > 0) { %>
+                        <% friends.forEach(friend => { %>
+                            <a href="/chat/<%= friend.id %>" class="bg-white p-4 rounded-[1.8rem] border border-slate-100 flex items-center justify-between shadow-sm active:scale-95 transition-all">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-10 h-10 bg-teal-50 rounded-xl flex items-center justify-center font-bold text-teal-700">
+                                        <%= friend.fullname.charAt(0) %>
+                                    </div>
+                                    <div>
+                                        <p class="text-sm font-bold text-slate-900"><%= friend.fullname %></p>
+                                        <p class="text-[10px] text-slate-400 uppercase font-bold"><%= friend.department || 'Student' %></p>
+                                    </div>
+                                </div>
+                                <i class="fa-solid fa-paper-plane text-teal-600 text-xs opacity-40"></i>
+                            </a>
+                        <% }) %>
+                    <% } else { %>
+                        <div class="p-8 text-center bg-slate-50 rounded-[2rem] border-2 border-dashed border-slate-200">
+                            <p class="text-xs text-slate-400">No friends yet. Start connecting!</p>
+                        </div>
+                    <% } %>
+                </div>
+            </section>
+        </div>
+
+        <div id="chats-view" class="hidden">
+            <h3 class="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-4 px-2">Messages</h3>
+            <div class="bg-white rounded-[2.5rem] border border-slate-100 overflow-hidden shadow-sm">
+                <% if (recentChats && recentChats.length > 0) { %>
+                    <% recentChats.forEach(chat => { %>
+                        <a href="/chat/<%= chat.id %>" class="flex items-center gap-4 p-5 hover:bg-slate-50 border-b border-slate-50 last:border-0 transition-colors relative">
+                            <div class="w-12 h-12 bg-slate-100 rounded-2xl flex items-center justify-center font-bold text-slate-500">
+                                <%= chat.fullname.charAt(0) %>
+                            </div>
+                            <div class="flex-1 min-w-0">
+                                <div class="flex justify-between items-center mb-0.5">
+                                    <h4 class="text-sm font-bold text-slate-900 truncate"><%= chat.fullname %></h4>
+                                    <% if (chat.unread) { %>
+                                        <span class="w-2 h-2 bg-teal-500 rounded-full animate-pulse"></span>
+                                    <% } %>
+                                </div>
+                                <p class="text-xs <%= chat.unread ? 'font-bold text-slate-900' : 'text-slate-500' %> truncate">
+                                    <%= chat.message %>
+                                </p>
+                            </div>
+                        </a>
+                    <% }) %>
+                <% } else { %>
+                    <div class="text-center py-20 px-10">
+                        <div class="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <i class="fa-solid fa-message text-slate-200 text-xl"></i>
+                        </div>
+                        <p class="text-xs text-slate-400 leading-relaxed">No messages found.</p>
+                    </div>
+                <% } %>
+            </div>
+        </div>
+
+    </main>
+
+    <nav class="fixed bottom-0 left-0 right-0 bg-white/90 backdrop-blur-xl border-t border-slate-100 px-6 py-4 flex justify-between items-end z-[100]">
+        <a href="/timeline" class="nav-item flex flex-col items-center gap-1">
+            <i class="fa-solid fa-house-chimney text-xl"></i>
+            <span class="text-[9px] font-black uppercase">Home</span>
+        </a>
+        <a href="/friends" class="nav-item nav-active relative flex flex-col items-center gap-1">
+            <i class="fa-solid fa-user-group text-xl"></i>
+            <span class="text-[9px] font-black uppercase">Network</span>
+            
+            <% if ((locals.friendCount + locals.msgCount) > 0) { %>
+                <span class="badge-main animate-bounce">
+                    <%= (locals.friendCount + locals.msgCount) %>
+                </span>
+            <% } %>
+        </a>
+        
+        <a href="/quiz" class="relative -top-8 group">
+            <div class="w-16 h-16 bg-orange-500 rounded-[2.2rem] flex items-center justify-center text-white border-4 border-white shadow-xl shadow-orange-500/20 active:scale-90 transition-all">
+                <i class="fa-solid fa-brain text-2xl"></i>
+            </div>
+        </a>
+
+        <a href="/resources" class="nav-item flex flex-col items-center gap-1">
+            <i class="fa-solid fa-book-open-reader text-xl"></i>
+            <span class="text-[9px] font-black uppercase">Vault</span>
+        </a>
+        <a href="/profile/<%= user.id %>" class="nav-item flex flex-col items-center gap-1">
+            <i class="fa-solid fa-id-card text-xl"></i>
+            <span class="text-[9px] font-black uppercase">Profile</span>
+        </a>
+    </nav>
+
+    <script>
+        function switchTab(tab) {
+            const netView = document.getElementById('network-view');
+            const chatView = document.getElementById('chats-view');
+            const netTab = document.getElementById('net-tab');
+            const chatTab = document.getElementById('chat-tab');
+
+            if (tab === 'network') {
+                netView.classList.remove('hidden');
+                chatView.classList.add('hidden');
+                netTab.classList.add('tab-active');
+                chatTab.classList.remove('tab-active');
+                chatTab.classList.add('text-slate-400');
+            } else {
+                netView.classList.add('hidden');
+                chatView.classList.remove('hidden');
+                chatTab.classList.add('tab-active');
+                chatTab.classList.remove('text-slate-400');
+                netTab.classList.remove('tab-active');
+                netTab.classList.add('text-slate-400');
+            }
+        }
+    </script>
+</body>
+</html>

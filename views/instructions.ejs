@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"><title>Exam Rules</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body class="bg-slate-50 flex items-center justify-center min-h-screen p-6">
+    <div class="max-w-md w-full bg-white p-10 rounded-[3rem] shadow-2xl text-center">
+        <div class="w-20 h-20 bg-rose-50 text-rose-500 rounded-3xl flex items-center justify-center mx-auto mb-8">
+            <i class="fa-solid fa-shield-halved text-3xl"></i>
+        </div>
+        <h1 class="text-2xl font-black text-slate-900 mb-2">Exam Integrity</h1>
+        <p class="text-slate-500 text-sm mb-8">Please read these rules carefully before starting <span class="font-bold text-slate-900"><%= quiz.title %></span>.</p>
+        
+        <ul class="text-left space-y-4 mb-10">
+            <li class="flex items-start gap-3 text-xs font-bold text-slate-600">
+                <i class="fa-solid fa-circle-check text-teal-500 mt-0.5"></i>
+                <span>The session lasts <strong><%= quiz.duration_minutes %> minutes</strong>.</span>
+            </li>
+            <li class="flex items-start gap-3 text-xs font-bold text-slate-600">
+                <i class="fa-solid fa-triangle-exclamation text-amber-500 mt-0.5"></i>
+                <span>Switching tabs or minimizing windows will be flagged.</span>
+            </li>
+            <li class="flex items-start gap-3 text-xs font-bold text-slate-600">
+                <i class="fa-solid fa-circle-xmark text-rose-500 mt-0.5"></i>
+                <span>Do not refresh the page during the exam.</span>
+            </li>
+        </ul>
+
+        <a href="/quiz/start/<%= quiz.id %>" class="block w-full bg-teal-800 text-white py-5 rounded-2xl font-black uppercase tracking-widest shadow-xl shadow-teal-900/20 active:scale-95 transition-all">
+            Begin Attempt
+        </a>
+        <a href="/dashboard" class="block mt-6 text-xs font-black text-slate-400 uppercase tracking-widest hover:text-slate-600">Cancel and Exit</a>
+    </div>
+</body>
+</html>

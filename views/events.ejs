@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Events | Student Link</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap');
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background: #f8fafc; padding-bottom: 120px; }
+        .event-card { background: white; border-radius: 28px; overflow: hidden; transition: all 0.3s ease; border: 1px solid #f1f5f9; }
+        .event-card:hover { transform: translateY(-5px); shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1); }
+        .date-gradient { background: linear-gradient(135deg, #008080 0%, #004d4d 100%); }
+        .suggest-btn { background: linear-gradient(135deg, #f97316 0%, #ea580c 100%); }
+        .img-overlay { background: linear-gradient(to bottom, transparent, rgba(0,0,0,0.6)); }
+    </style>
+</head>
+<body class="text-slate-900">
+
+    <header class="sticky top-0 z-50 bg-white/80 backdrop-blur-md px-6 py-5 flex justify-between items-center border-b border-slate-100">
+        <a href="/timeline" class="w-10 h-10 bg-slate-50 rounded-xl flex items-center justify-center text-slate-400">
+            <i class="fa-solid fa-chevron-left"></i>
+        </a>
+        <h1 class="text-lg font-extrabold text-slate-800 tracking-tight">Campus Events</h1>
+        <a href="/events/add" class="w-10 h-10 bg-teal-50 text-teal-700 rounded-xl flex items-center justify-center">
+            <i class="fa-solid fa-plus text-lg"></i>
+        </a>
+    </header>
+
+    <main class="max-w-md mx-auto px-5 pt-6">
+        
+        <div class="suggest-btn p-6 rounded-[2.5rem] text-white mb-10 shadow-lg shadow-orange-500/20 relative overflow-hidden">
+            <div class="relative z-10">
+                <h2 class="text-lg font-extrabold">Hosting an event?</h2>
+                <p class="text-xs text-orange-100 mb-4 opacity-90">Get it featured on everyone's timeline</p>
+                <a href="/events/add" class="bg-white text-orange-600 px-5 py-2 rounded-xl text-xs font-bold inline-block active:scale-95 transition">
+                    + Suggest Event
+                </a>
+            </div>
+            <i class="fa-solid fa-calendar-star absolute -bottom-4 -right-2 text-7xl text-white/10 -rotate-12"></i>
+        </div>
+
+        <% if (locals.submitted) { %>
+            <div class="bg-emerald-50 border border-emerald-100 text-emerald-700 p-4 rounded-2xl mb-6 text-xs font-medium flex items-center gap-3">
+                <i class="fa-solid fa-circle-check text-lg"></i>
+                Event submitted! It will appear once approved by Alite.
+            </div>
+        <% } %>
+
+        <div class="space-y-8">
+            <% if (events && events.length > 0) { %>
+                <% events.forEach(event => { %>
+                    <article class="event-card shadow-sm">
+                        <div class="relative h-44 w-full bg-slate-200">
+                            <% if(event.event_image) { %>
+                                <img src="<%= event.event_image %>" class="w-full h-full object-cover" alt="event">
+                            <% } else { %>
+                                <div class="w-full h-full bg-teal-900 flex items-center justify-center">
+                                    <i class="fa-solid fa-bolt-lightning text-white/20 text-4xl"></i>
+                                </div>
+                            <% } %>
+                            
+                            <div class="absolute top-4 left-4 date-gradient px-3 py-2 rounded-2xl text-white text-center shadow-lg">
+                                <p class="text-[9px] font-bold uppercase leading-none opacity-80"><%= new Date(event.event_date).toLocaleDateString('en-GB', { month: 'short' }) %></p>
+                                <p class="text-lg font-black leading-tight"><%= new Date(event.event_date).getDate() %></p>
+                            </div>
+
+                            <% if(event.uni_name === 'All') { %>
+                                <div class="absolute top-4 right-4 bg-orange-500 text-white text-[9px] font-black px-3 py-1 rounded-full uppercase tracking-widest shadow-lg">
+                                    Global Event
+                                </div>
+                            <% } %>
+                        </div>
+
+                        <div class="p-6">
+                            <h4 class="font-bold text-slate-900 text-lg leading-tight mb-3"><%= event.title %></h4>
+                            
+                            <div class="flex items-center gap-4 mb-5">
+                                <div class="flex items-center gap-1.5 text-slate-400">
+                                    <i class="fa-solid fa-location-dot text-teal-600 text-[10px]"></i>
+                                    <span class="text-[11px] font-semibold"><%= event.location %></span>
+                                </div>
+                                <div class="flex items-center gap-1.5 text-slate-400">
+                                    <i class="fa-solid fa-building-columns text-teal-600 text-[10px]"></i>
+                                    <span class="text-[11px] font-semibold"><%= event.uni_name === 'All' ? 'Everywhere' : event.uni_name %></span>
+                                </div>
+                            </div>
+
+                            <p class="text-slate-500 text-[13px] leading-relaxed mb-6"><%= event.description %></p>
+                            
+                            <% if(event.event_link) { %>
+                                <a href="<%= event.event_link %>" target="_blank" class="block w-full text-center bg-slate-900 text-white py-4 rounded-2xl text-xs font-extrabold hover:bg-teal-800 transition shadow-lg active:scale-95">
+                                    Join Registration <i class="fa-solid fa-arrow-up-right-from-square ml-2 opacity-40"></i>
+                                </a>
+                            <% } %>
+                        </div>
+                    </article>
+                <% }) %>
+            <% } else { %>
+                <div class="text-center py-20 bg-white rounded-[2.5rem] border-2 border-dashed border-slate-100">
+                    <i class="fa-solid fa-calendar-day text-slate-200 text-4xl mb-3"></i>
+                    <p class="text-slate-400 text-xs font-bold uppercase tracking-widest">No Events Found</p>
+                </div>
+            <% } %>
+        </div>
+    </main>
+
+    <nav class="fixed bottom-0 left-0 right-0 bg-white/90 backdrop-blur-xl border-t border-slate-100 px-6 py-4 flex justify-between items-end z-[100] shadow-[0_-15px_40px_rgba(0,0,0,0.03)]">
+        <a href="/timeline" class="flex flex-col items-center gap-1 text-slate-300">
+            <i class="fa-solid fa-house-chimney text-xl"></i>
+            <span class="text-[9px] font-black uppercase tracking-tighter">Home</span>
+        </a>
+        <a href="/friends" class="flex flex-col items-center gap-1 text-slate-300">
+            <i class="fa-solid fa-user-group text-xl"></i>
+            <span class="text-[9px] font-black uppercase tracking-tighter">Network</span>
+        </a>
+        <a href="/quiz" class="relative -top-8">
+            <div class="bg-orange-500 w-16 h-16 rounded-[2.2rem] flex items-center justify-center text-white rotate-12 shadow-xl shadow-orange-500/30 border-4 border-white">
+                <i class="fa-solid fa-brain text-2xl"></i>
+            </div>
+        </a>
+        <a href="/resources" class="flex flex-col items-center gap-1 text-slate-300">
+            <i class="fa-solid fa-book-open-reader text-xl"></i>
+            <span class="text-[9px] font-black uppercase tracking-tighter">Vault</span>
+        </a>
+        <a href="/profile" class="flex flex-col items-center gap-1 text-slate-300">
+            <i class="fa-solid fa-id-card text-xl"></i>
+            <span class="text-[9px] font-black uppercase tracking-tighter">Profile</span>
+        </a>
+    </nav>
+</body>
+</html>

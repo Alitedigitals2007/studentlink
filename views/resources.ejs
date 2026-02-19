@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Link | The Vault</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+        
+        body { 
+            font-family: 'Plus Jakarta Sans', sans-serif; 
+            background: #f8fafc; 
+            padding-bottom: 110px; 
+        }
+
+        .glass-header { 
+            background: rgba(255, 255, 255, 0.85); 
+            backdrop-filter: blur(12px); 
+            border-bottom: 1px solid rgba(0,0,0,0.05); 
+        }
+
+        .resource-card {
+            background: white;
+            border-radius: 24px;
+            border: 1px solid #f1f5f9;
+            transition: all 0.3s ease;
+        }
+
+        .resource-card:active { transform: scale(0.97); }
+
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+
+        .nav-item { color: #94a3b8; }
+        .nav-active { color: #008080 !important; }
+
+        .badge {
+            position: absolute;
+            top: -4px;
+            right: -4px;
+            background: #ef4444;
+            color: white;
+            font-size: 8px;
+            font-weight: 800;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid white;
+        }
+    </style>
+</head>
+<body class="text-slate-900">
+
+    <header class="sticky top-0 z-50 glass-header px-6 py-4 flex justify-between items-center">
+        <div class="flex items-center gap-2">
+            <a href="/timeline" class="w-10 h-10 bg-teal-800 rounded-2xl flex items-center justify-center text-white font-black text-xl rotate-3 shadow-lg shadow-teal-900/20">S</a>
+            <h1 class="text-xl font-extrabold tracking-tighter text-teal-900">Vault<span class="text-orange-500">.</span></h1>
+        </div>
+
+        <button onclick="document.getElementById('uploadModal').classList.toggle('hidden')" 
+            class="w-10 h-10 bg-teal-600 rounded-2xl flex items-center justify-center text-white shadow-lg active:scale-90 transition-all">
+            <i class="fa-solid fa-plus"></i>
+        </button>
+    </header>
+
+    <main class="max-w-md mx-auto px-5 pt-6">
+        
+        <div class="relative mb-6">
+            <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
+            <input type="text" placeholder="Search textbooks, P.Q's..." 
+                class="w-full bg-white border border-slate-100 py-4 pl-12 pr-4 rounded-[2rem] text-sm outline-none focus:ring-2 focus:ring-teal-500/20 transition-all">
+        </div>
+
+        <div class="flex gap-3 overflow-x-auto no-scrollbar mb-8 pb-2">
+            <span class="bg-teal-800 text-white px-5 py-2 rounded-full text-[10px] font-black uppercase">All</span>
+            <span class="bg-white border border-slate-100 text-slate-500 px-5 py-2 rounded-full text-[10px] font-black uppercase">Textbooks</span>
+            <span class="bg-white border border-slate-100 text-slate-500 px-5 py-2 rounded-full text-[10px] font-black uppercase">Past Questions</span>
+        </div>
+
+        <div class="grid grid-cols-1 gap-4">
+            <% if (typeof resources !== 'undefined' && resources.length > 0) { %>
+                <% resources.forEach(item => { %>
+                    <div class="resource-card p-4 flex items-center gap-4">
+                        <div class="w-14 h-14 bg-orange-50 rounded-2xl flex items-center justify-center text-orange-500 text-xl">
+                            <i class="fa-solid <%= item.type === 'pdf' ? 'fa-file-pdf' : 'fa-file-lines' %>"></i>
+                        </div>
+                        <div class="flex-1">
+                            <h4 class="text-sm font-bold text-slate-900 leading-tight"><%= item.title %></h4>
+                            <p class="text-[10px] text-slate-400 font-bold uppercase mt-1"><%= item.course_code %> • Shared by Anonymous</p>
+                        </div>
+                        <a href="<%= item.download_url %>" class="w-10 h-10 bg-teal-50 rounded-xl flex items-center justify-center text-teal-600 active:bg-teal-600 active:text-white transition-all">
+                            <i class="fa-solid fa-cloud-arrow-down"></i>
+                        </a>
+                    </div>
+                <% }) %>
+            <% } else { %>
+                <div class="text-center py-20">
+                    <div class="w-20 h-20 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-4 text-slate-200">
+                        <i class="fa-solid fa-folder-open text-3xl"></i>
+                    </div>
+                    <p class="text-xs font-bold text-slate-400 uppercase tracking-widest">No resources yet</p>
+                </div>
+            <% } %>
+        </div>
+    </main>
+
+    <div id="uploadModal" class="hidden fixed inset-0 z-[200] bg-slate-900/60 backdrop-blur-sm p-6 flex items-center justify-center">
+        <div class="bg-white w-full max-w-sm rounded-[2.5rem] p-8 shadow-2xl relative">
+            <button onclick="document.getElementById('uploadModal').classList.add('hidden')" class="absolute top-6 right-6 text-slate-400 hover:text-slate-600">
+                <i class="fa-solid fa-circle-xmark text-xl"></i>
+            </button>
+            
+            <h3 class="text-lg font-black text-slate-900 mb-6">Contribute to Vault</h3>
+            
+            <form action="/upload-resource" method="POST" class="space-y-4">
+                <div class="space-y-1">
+                    <label class="text-[9px] font-bold text-slate-400 uppercase ml-2">Material Name</label>
+                    <input type="text" name="title" required placeholder="e.g. MTH 101 Textbook" class="w-full bg-slate-50 border-none p-4 rounded-2xl text-sm outline-none">
+                </div>
+
+                <div class="space-y-1">
+                    <label class="text-[9px] font-bold text-slate-400 uppercase ml-2">Course Code</label>
+                    <input type="text" name="course_code" placeholder="e.g. MTH101" class="w-full bg-slate-50 border-none p-4 rounded-2xl text-sm outline-none">
+                </div>
+
+                <div class="space-y-1">
+                    <label class="text-[9px] font-bold text-slate-400 uppercase ml-2">Link (Drive/Dropbox)</label>
+                    <input type="url" name="download_url" required placeholder="https://..." class="w-full bg-slate-50 border-none p-4 rounded-2xl text-sm outline-none">
+                </div>
+
+                <button class="w-full bg-teal-800 text-white py-4 rounded-2xl font-black uppercase text-[10px] tracking-widest shadow-lg shadow-teal-900/20 mt-4">
+                    Submit Material
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <nav class="fixed bottom-0 left-0 right-0 bg-white/90 backdrop-blur-xl border-t border-slate-100 px-6 py-4 flex justify-between items-end z-[100]">
+        <a href="/timeline" class="nav-item flex flex-col items-center gap-1">
+            <i class="fa-solid fa-house-chimney text-xl"></i>
+            <span class="text-[9px] font-black uppercase">Home</span>
+        </a>
+        <a href="/friends" class="nav-item relative flex flex-col items-center gap-1">
+            <i class="fa-solid fa-user-group text-xl"></i>
+            <span class="text-[9px] font-black uppercase">Network</span>
+            <% if (locals.friendCount > 0 || locals.msgCount > 0) { %>
+                <span class="badge"><%= locals.friendCount + locals.msgCount %></span>
+            <% } %>
+        </a>
+        <a href="/quiz" class="relative -top-8 group">
+            <div class="w-16 h-16 rounded-[2.2rem] bg-orange-500 flex items-center justify-center text-white border-4 border-white shadow-xl">
+                <i class="fa-solid fa-brain text-2xl"></i>
+            </div>
+        </a>
+        <a href="/resources" class="nav-item nav-active flex flex-col items-center gap-1">
+            <i class="fa-solid fa-book-open-reader text-xl"></i>
+            <span class="text-[9px] font-black uppercase">Vault</span>
+        </a>
+        <a href="/profile/<%= user.id %>" class="nav-item flex flex-col items-center gap-1">
+            <i class="fa-solid fa-id-card text-xl"></i>
+            <span class="text-[9px] font-black uppercase">Profile</span>
+        </a>
+    </nav>
+</body>
+</html>

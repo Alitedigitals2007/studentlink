@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"><title>Exam Session | StudentLink</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .progress-transition { transition: width 0.4s ease; }
+        .question-step { display: none; }
+        .active-step { display: block; animation: fadeIn 0.3s ease-in-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body class="bg-slate-50 select-none">
+    <div class="fixed top-0 left-0 w-full h-1.5 bg-slate-100 z-[60]">
+        <div id="progressBar" class="h-full bg-teal-500 progress-transition" style="width: 0%"></div>
+    </div>
+
+    <header class="p-6 bg-white border-b border-slate-100 flex justify-between items-center sticky top-1.5 z-50">
+        <div>
+            <h2 class="font-black text-slate-900"><%= quiz.title %></h2>
+            <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">
+                Progress: <span id="progressPercent">0</span>%
+            </p>
+        </div>
+        <div id="timer" class="bg-rose-50 text-rose-600 px-6 py-2 rounded-xl font-black text-sm border border-rose-100">
+            00:00
+        </div>
+    </header>
+
+    <main class="max-w-3xl mx-auto p-8">
+        <form id="quizForm" action="/quiz/submit/<%= sessionId %>" method="POST">
+            
+            <% questions.forEach((q, i) => { %>
+                <div class="question-step <%= i === 0 ? 'active-step' : '' %>" data-index="<%= i %>">
+                    <div class="bg-white p-8 rounded-[2.5rem] shadow-sm border border-slate-100 mb-8">
+                        <div class="flex justify-between items-center mb-6">
+                            <span class="text-[10px] font-black text-teal-600 uppercase bg-teal-50 px-3 py-1 rounded-full">Question <%= i + 1 %> of <%= questions.length %></span>
+                        </div>
+                        
+                        <p class="text-xl font-bold text-slate-800 mb-8"><%= q.question %></p>
+                        
+                        <div class="space-y-3">
+                            <% ['a', 'b', 'c', 'd'].forEach(opt => { %>
+                                <label class="flex items-center gap-4 p-5 rounded-2xl border-2 border-slate-50 hover:border-teal-100 hover:bg-teal-50/50 cursor-pointer transition-all group">
+                                    <input type="radio" name="q<%= q.id %>" value="<%= opt.toUpperCase() %>" 
+                                           class="w-5 h-5 accent-teal-600 quiz-radio" 
+                                           onchange="updateProgress()">
+                                    <span class="text-sm font-bold text-slate-600 group-hover:text-teal-700 uppercase">
+                                        <span class="mr-2 text-slate-300"><%= opt.toUpperCase() %>.</span> <%= q['option_' + opt] %>
+                                    </span>
+                                </label>
+                            <% }) %>
+                        </div>
+                    </div>
+                </div>
+            <% }) %>
+
+            <div class="flex gap-4">
+                <button type="button" id="prevBtn" onclick="changeStep(-1)" class="hidden flex-1 bg-white border border-slate-200 text-slate-500 py-5 rounded-2xl font-black uppercase tracking-widest hover:bg-slate-50 transition-all">
+                    Previous
+                </button>
+                <button type="button" id="nextBtn" onclick="changeStep(1)" class="flex-1 bg-slate-900 text-white py-5 rounded-2xl font-black uppercase tracking-widest shadow-xl active:scale-95 transition-all">
+                    Next Question
+                </button>
+                <button type="submit" id="submitBtn" class="hidden flex-1 bg-teal-600 text-white py-5 rounded-2xl font-black uppercase tracking-widest shadow-xl shadow-teal-200 active:scale-95 transition-all">
+                    Submit Final Exam
+                </button>
+            </div>
+        </form>
+    </main>
+
+    <script>
+        let currentStep = 0;
+        const steps = document.querySelectorAll('.question-step');
+        const totalSteps = steps.length;
+
+        function changeStep(n) {
+            // Hide current step
+            steps[currentStep].classList.remove('active-step');
+            
+            // Update index
+            currentStep += n;
+
+            // Show new step
+            steps[currentStep].classList.add('active-step');
+
+            // Update buttons
+            document.getElementById('prevBtn').classList.toggle('hidden', currentStep === 0);
+            
+            if (currentStep === totalSteps - 1) {
+                document.getElementById('nextBtn').classList.add('hidden');
+                document.getElementById('submitBtn').classList.remove('hidden');
+            } else {
+                document.getElementById('nextBtn').classList.remove('hidden');
+                document.getElementById('submitBtn').classList.add('hidden');
+            }
+            window.scrollTo(0,0);
+        }
+
+        function updateProgress() {
+            const answered = document.querySelectorAll('input[type="radio"]:checked').length;
+            const percentage = Math.round((answered / totalSteps) * 100);
+            document.getElementById('progressBar').style.width = percentage + '%';
+            document.getElementById('progressPercent').innerText = percentage;
+        }
+
+        // Timer Logic
+        let timeLeft = <%= quiz.duration_minutes || 30 %> * 60;
+        const timerDisplay = document.getElementById('timer');
+        const countdown = setInterval(() => {
+            const min = Math.floor(timeLeft / 60);
+            const sec = timeLeft % 60;
+            timerDisplay.innerText = `${min}:${sec < 10 ? '0' : ''}${sec}`;
+            if (timeLeft <= 0) { clearInterval(countdown); document.getElementById('quizForm').submit(); }
+            timeLeft--;
+        }, 1000);
+
+        // Security
+        document.oncontextmenu = (e) => e.preventDefault();
+    </script>
+</body>
+</html>

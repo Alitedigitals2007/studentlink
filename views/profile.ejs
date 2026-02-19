@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= profileUser.fullname %> | Profile</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background: #f1f5f9; }
+        .profile-gradient { background: linear-gradient(135deg, #008080 0%, #004d4d 100%); }
+        .glass-popup { background: white; border-radius: 3rem; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.1); border: 1px solid rgba(255,255,255,0.8); }
+        .info-pill { background: #f8fafc; border: 1px solid #f1f5f9; border-radius: 1.5rem; transition: all 0.3s ease; }
+    </style>
+</head>
+<body class="flex items-center justify-center min-h-screen p-4">
+
+    <div class="glass-popup w-full max-w-md overflow-hidden relative">
+        
+        <div class="profile-gradient h-32 w-full"></div>
+        
+        <a href="/timeline" class="absolute top-4 right-6 w-10 h-10 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center text-white hover:bg-white/40 transition-all z-10">
+            <i class="fa-solid fa-xmark"></i>
+        </a>
+
+        <div class="px-8 pb-10">
+            <div class="relative -mt-16 mb-5 flex flex-col items-center md:items-start">
+                <div class="relative">
+                    <img src="<%= profileUser.profile_pic || 'https://ui-avatars.com/api/?name=' + profileUser.fullname %>" 
+                         class="w-32 h-32 rounded-[3rem] object-cover ring-8 ring-white shadow-2xl">
+                    
+                    <% if (profileUser.is_verified) { %>
+                        <div class="absolute -bottom-2 -right-2 bg-blue-500 text-white w-9 h-9 rounded-full flex items-center justify-center border-4 border-white shadow-lg">
+                            <i class="fa-solid fa-circle-check text-[14px]"></i>
+                        </div>
+                    <% } %>
+                </div>
+            </div>
+
+            <div class="text-center md:text-left mb-6">
+                <h2 class="text-2xl font-extrabold text-slate-900 tracking-tight"><%= profileUser.fullname %></h2>
+                <p class="text-teal-600 font-bold text-[10px] uppercase tracking-[0.2em] mt-1"><%= profileUser.university %></p>
+            </div>
+
+            <div class="space-y-3">
+                <div class="flex gap-3">
+                    <div class="flex-1 info-pill p-4">
+                        <p class="text-[9px] font-black uppercase text-slate-400 mb-1 tracking-widest">Department</p>
+                        <p class="text-xs font-bold text-slate-700 truncate"><%= profileUser.department || 'General' %></p>
+                    </div>
+                    <div class="w-24 info-pill p-4 text-center">
+                        <p class="text-[9px] font-black uppercase text-slate-400 mb-1 tracking-widest">Level</p>
+                        <p class="text-xs font-bold text-slate-700"><%= profileUser.level || '?' %></p>
+                    </div>
+                </div>
+
+                <div class="info-pill p-4 flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <div class="w-8 h-8 bg-emerald-100 text-emerald-600 rounded-xl flex items-center justify-center">
+                            <i class="fa-brands fa-whatsapp"></i>
+                        </div>
+                        <div>
+                            <p class="text-[9px] font-black uppercase text-slate-400 tracking-widest">WhatsApp</p>
+                            <p class="text-xs font-bold text-slate-700"><%= profileUser.whatsapp %></p>
+                        </div>
+                    </div>
+                    <a href="https://wa.me/<%= profileUser.whatsapp %>" target="_blank">
+                        <i class="fa-solid fa-arrow-up-right-from-square text-[10px] text-slate-300"></i>
+                    </a>
+                </div>
+            </div>
+
+            <div class="mt-8">
+                <% if (profileUser.id === user.id) { %>
+                    <a href="/profile/edit" class="block w-full text-center bg-slate-900 text-white py-4 rounded-2xl font-bold text-sm shadow-xl shadow-slate-200 hover:bg-slate-800 transition-all">
+                        Edit My Profile
+                    </a>
+                <% } else { %>
+                    <% if (locals.friendStatus === 'accepted') { %>
+                        <div class="flex gap-2">
+                            <div class="flex-1 bg-emerald-50 text-emerald-600 py-4 rounded-2xl font-bold text-xs flex items-center justify-center gap-2">
+                                <i class="fa-solid fa-user-check"></i> Friend
+                            </div>
+                            <a href="/chat/<%= profileUser.id %>" class="flex-[2] text-center bg-teal-800 text-white py-4 rounded-2xl font-bold text-xs shadow-lg shadow-teal-900/20 active:scale-95 transition-all">
+                                Send Message
+                            </a>
+                        </div>
+                    <% } else if (locals.friendStatus === 'pending') { %>
+                        <button class="w-full bg-orange-50 text-orange-500 py-4 rounded-2xl font-bold text-sm cursor-default flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-clock-rotate-left"></i> Awaiting Approval
+                        </button>
+                    <% } else { %>
+                        <form action="/friend-request/send/<%= profileUser.id %>" method="POST">
+                            <button type="submit" class="w-full bg-teal-800 text-white py-4 rounded-2xl font-bold text-sm shadow-xl shadow-teal-900/20 active:scale-95 transition-all flex items-center justify-center gap-3">
+                                <i class="fa-solid fa-user-plus"></i> Send Friend Request
+                            </button>
+                        </form>
+                    <% } %>
+                <% } %>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>

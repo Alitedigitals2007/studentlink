@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alerts | Alite</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+        
+        body { 
+            font-family: 'Plus Jakarta Sans', sans-serif; 
+            background: #f8fafc; 
+            color: #0f172a;
+        }
+
+        .notification-card {
+            background: white;
+            border-radius: 24px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 1px solid #f1f5f9;
+        }
+
+        .notification-card:active {
+            transform: scale(0.98);
+        }
+
+        .unread-indicator {
+            width: 8px;
+            height: 8px;
+            background: #008080; /* Teal to match your theme */
+            border-radius: 50%;
+            display: inline-block;
+        }
+
+        .glass-header { 
+            background: rgba(255, 255, 255, 0.8); 
+            backdrop-filter: blur(12px); 
+            border-bottom: 1px solid rgba(0,0,0,0.05); 
+        }
+    </style>
+</head>
+<body class="pb-10">
+
+    <header class="sticky top-0 z-50 glass-header px-6 py-5 flex justify-between items-center">
+        <div class="flex items-center gap-4">
+            <a href="/timeline" class="w-10 h-10 rounded-2xl border border-slate-100 flex items-center justify-center text-slate-400 active:bg-slate-50 transition-all">
+                <i class="fa-solid fa-arrow-left text-sm"></i>
+            </a>
+            <h1 class="text-xl font-extrabold tracking-tight">Alerts</h1>
+        </div>
+
+        <% if (typeof notifications !== 'undefined' && notifications.some(n => !n.is_read)) { %>
+            <form action="/notifications/mark-all-read" method="POST">
+                <button class="text-xs font-bold text-teal-600 bg-teal-50 px-4 py-2 rounded-full active:scale-95 transition-all">
+                    Mark Read
+                </button>
+            </form>
+        <% } %>
+    </header>
+
+    <main class="max-w-md mx-auto px-5 pt-8 space-y-4">
+        <% if (typeof notifications !== 'undefined' && notifications.length > 0) { %>
+            
+            <% notifications.forEach(note => { %>
+                <div class="notification-card p-5 shadow-sm <%= !note.is_read ? 'border-l-4 border-l-teal-600' : 'opacity-70' %>">
+                    <div class="flex justify-between items-start mb-1">
+                        <div class="flex items-center gap-2">
+                            <% if(!note.is_read) { %>
+                                <span class="unread-indicator"></span>
+                            <% } %>
+                            <span class="text-[10px] font-black uppercase tracking-widest text-teal-600">
+                                Official Broadcast
+                            </span>
+                        </div>
+                        <span class="text-[10px] font-bold text-slate-400">
+                            <%= new Date(note.created_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' }) %>
+                        </span>
+                    </div>
+
+                    <h3 class="text-sm font-extrabold text-slate-900 mb-2 leading-tight">
+                        <%= note.title %>
+                    </h3>
+                    
+                    <p class="text-[13px] text-slate-500 leading-relaxed font-medium">
+                        <%= note.message %>
+                    </p>
+                </div>
+            <% }) %>
+
+        <% } else { %>
+            <div class="text-center py-20">
+                <div class="w-20 h-20 bg-slate-100 rounded-[2.5rem] flex items-center justify-center mx-auto mb-6">
+                    <i class="fa-solid fa-wind text-2xl text-slate-300"></i>
+                </div>
+                <h3 class="font-bold text-slate-900">All caught up!</h3>
+                <p class="text-sm text-slate-400 mt-1">No new notifications at the moment.</p>
+                <a href="/timeline" class="inline-block mt-8 text-xs font-bold text-teal-600 border-b-2 border-teal-600 pb-1">Back to Feed</a>
+            </div>
+        <% } %>
+    </main>
+
+    <footer class="mt-16 text-center">
+        <p class="text-[10px] font-bold text-slate-300 uppercase tracking-[0.2em]">Powered by Alite System</p>
+    </footer>
+
+</body>
+</html>

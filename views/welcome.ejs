@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Link | Academic Ecosystem</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body { background: #002b2b; font-family: 'Inter', sans-serif; }
+        .hero-pattern {
+            background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+        }
+        .stat-card { background: rgba(255, 255, 255, 0.05); border-top: 3px solid #ffa500; }
+    </style>
+</head>
+<body class="text-white hero-pattern min-h-screen">
+
+    <div class="max-w-md mx-auto px-6 py-12 flex flex-col min-h-screen">
+        <div class="mb-12">
+            <h1 class="text-4xl font-serif font-bold border-b-4 border-orange-500 inline-block">SL</h1>
+            <h2 class="text-2xl font-bold mt-4 tracking-tight">The Student Link <span class="text-orange-400">Network</span></h2>
+            <p class="text-teal-200 mt-2">Professional collaborative environment for tertiary excellence.</p>
+        </div>
+
+        <div class="grid grid-cols-2 gap-4 mb-10">
+            <div class="stat-card p-4 rounded-xl">
+                <p class="text-xs text-teal-300 uppercase">Active Students</p>
+                <p class="text-2xl font-bold">12.4k+</p>
+            </div>
+            <div class="stat-card p-4 rounded-xl">
+                <p class="text-xs text-teal-300 uppercase">Resources Shared</p>
+                <p class="text-2xl font-bold">3,100</p>
+            </div>
+        </div>
+
+        <div class="space-y-6 mb-12">
+            <div class="flex items-start gap-4">
+                <i class="fa-solid fa-shield-halved text-orange-400 mt-1"></i>
+                <div>
+                    <h4 class="font-bold">Verified Academic Resources</h4>
+                    <p class="text-sm text-gray-400">Curated materials by department and level.</p>
+                </div>
+            </div>
+            <div class="flex items-start gap-4">
+                <i class="fa-solid fa-ranking-star text-orange-400 mt-1"></i>
+                <div>
+                    <h4 class="font-bold">Institutional Ranking</h4>
+                    <p class="text-sm text-gray-400">Compete in quizzes to lift your university leaderboard.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-auto space-y-4">
+            <a href="/register" class="block w-full bg-orange-500 hover:bg-orange-600 text-center py-4 rounded-lg font-bold shadow-lg transition-all">
+                Join the Community
+            </a>
+            <a href="/login" class="block w-full border border-teal-500 text-center py-4 rounded-lg font-bold hover:bg-teal-900 transition-all">
+                Student Sign In
+            </a>
+        </div>
+    </div>
+</body>
+</html>

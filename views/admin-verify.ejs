@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verification Center | Admin</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap');
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background: #f1f5f9; }
+        .user-row { transition: all 0.2s; }
+        .user-row:hover { background-color: #f8fafc; }
+    </style>
+</head>
+<body class="p-4 md:p-8">
+
+    <div class="max-w-4xl mx-auto">
+        <header class="flex justify-between items-center mb-8">
+            <div>
+                <h1 class="text-2xl font-black text-slate-900">User Verification</h1>
+                <p class="text-sm text-slate-500 font-medium">Manage student blue ticks and credibility.</p>
+            </div>
+            <a href="/admin/dashboard" class="w-10 h-10 bg-white rounded-xl shadow-sm flex items-center justify-center text-slate-400">
+                <i class="fa-solid fa-xmark"></i>
+            </a>
+        </header>
+
+        <div class="bg-white rounded-[2rem] shadow-sm border border-slate-200 overflow-hidden">
+            <div class="overflow-x-auto">
+                <table class="w-full text-left">
+                    <thead class="bg-slate-50 border-b border-slate-100">
+                        <tr>
+                            <th class="px-6 py-4 text-[10px] font-black uppercase text-slate-400">Student</th>
+                            <th class="px-6 py-4 text-[10px] font-black uppercase text-slate-400">University</th>
+                            <th class="px-6 py-4 text-[10px] font-black uppercase text-slate-400 text-center">Status</th>
+                            <th class="px-6 py-4 text-[10px] font-black uppercase text-slate-400 text-right">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-100">
+                        <% users.forEach(student => { %>
+                            <tr class="user-row">
+                                <td class="px-6 py-4">
+                                    <div class="flex items-center gap-3">
+                                        <div class="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center font-bold text-slate-600">
+                                            <%= student.fullname.charAt(0) %>
+                                        </div>
+                                        <div>
+                                            <p class="text-sm font-bold text-slate-900">
+                                                <%= student.fullname %>
+                                                <% if(student.is_verified) { %>
+                                                    <i class="fa-solid fa-circle-check text-blue-500 ml-1"></i>
+                                                <% } %>
+                                            </p>
+                                            <p class="text-[10px] text-slate-400"><%= student.whatsapp %></p>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <span class="text-xs font-semibold text-slate-600"><%= student.university %></span>
+                                </td>
+                                <td class="px-6 py-4 text-center">
+                                    <% if(student.is_verified) { %>
+                                        <span class="px-3 py-1 bg-blue-50 text-blue-600 text-[10px] font-bold rounded-full uppercase tracking-tighter">Verified</span>
+                                    <% } else { %>
+                                        <span class="px-3 py-1 bg-slate-100 text-slate-400 text-[10px] font-bold rounded-full uppercase tracking-tighter">Pending</span>
+                                    <% } %>
+                                </td>
+                                <td class="px-6 py-4 text-right">
+<form action="/admin/toggle-verify/<%= student.id %>" method="POST">
+    <button type="submit" class="text-xs font-bold <%= student.is_verified ? 'text-rose-500' : 'text-teal-600' %>">
+        <%= student.is_verified ? 'Revoke' : 'Verify Student' %>
+    </button>
+</form>                                </td>
+                            </tr>
+                        <% }) %>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <p class="text-center mt-8 text-[10px] font-bold text-slate-400 uppercase tracking-widest">Alite Security Protocol v1.0</p>
+    </div>
+
+</body>
+</html>

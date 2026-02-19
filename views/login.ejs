@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login | Student Link</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        :root { --teal: #008080; --orange: #FFA500; }
+        body { background: #011616; color: white; }
+        .glass { background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.1); }
+        .input-field { background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.2); color: white; }
+        .input-field:focus { border-color: var(--orange); outline: none; }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col justify-center p-6">
+
+    <div class="text-center mb-10">
+        <h2 class="text-3xl font-bold">Welcome <span class="text-teal-400">Back</span></h2>
+        <p class="text-gray-400">Continue your academic journey</p>
+    </div>
+
+    <div class="glass p-8 rounded-3xl shadow-2xl">
+        <form action="/login" method="POST" class="space-y-6">
+            <div>
+                <label class="block text-xs uppercase tracking-widest text-gray-400 mb-2">WhatsApp Number</label>
+                <input type="tel" name="whatsapp" required 
+                    class="input-field w-full p-4 rounded-2xl" placeholder="08012345678">
+            </div>
+
+            <div>
+                <label class="block text-xs uppercase tracking-widest text-gray-400 mb-2">Password</label>
+                <input type="password" name="password" required 
+                    class="input-field w-full p-4 rounded-2xl" placeholder="••••••••">
+            </div>
+
+            <button type="submit" 
+                class="w-full bg-orange-500 hover:bg-orange-600 text-white font-bold py-4 rounded-2xl shadow-lg transition-all active:scale-95">
+                Login to Student Link
+            </button>
+        </form>
+    </div>
+
+    <p class="text-center mt-8 text-gray-400">
+        Don't have an account? <a href="/register" class="text-teal-400 font-bold">Sign Up</a>
+    </p>
+
+</body>
+</html>
