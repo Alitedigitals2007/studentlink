@@ -30,16 +30,19 @@
                     <label class="block text-xs uppercase tracking-widest text-gray-400 mb-1">Dept</label>
                     <input type="text" name="department" required class="w-full bg-black/20 border border-white/10 rounded-lg px-4 py-3 focus:border-orange-500 outline-none transition">
                 </div>
-                <div>
-                    <label class="block text-xs uppercase tracking-widest text-gray-400 mb-1">Level</label>
-                    <select name="level" class="w-full bg-black/20 border border-white/10 rounded-lg px-4 py-3 focus:border-orange-500 outline-none transition text-gray-300">
-                        <option value="100">100L</option>
-                        <option value="200">200L</option>
-                        <option value="300">300L</option>
-                        <option value="400">400L</option>
-                        <option value="500">500L</option>
-                    </select>
+              <div>
+    <label class="block text-xs uppercase tracking-widest text-gray-400 mb-3">Select Level</label>
+    <div class="grid grid-cols-5 gap-2">
+        <% ['100', '200', '300', '400', '500'].forEach(lvl => { %>
+            <label class="cursor-pointer">
+                <input type="radio" name="level" value="<%= lvl %>" class="peer hidden" <%= lvl === '100' ? 'checked' : '' %>>
+                <div class="text-center py-2 bg-black/20 border border-white/10 rounded-lg text-sm text-gray-400 peer-checked:bg-orange-500 peer-checked:text-white peer-checked:border-orange-500 transition-all">
+                    <%= lvl %>L
                 </div>
+            </label>
+        <% }); %>
+    </div>
+</div>
             </div>
             <div>
                 <label class="block text-xs uppercase tracking-widest text-gray-400 mb-1">Password</label>
