@@ -55,6 +55,16 @@ app.get('/', (req, res) => {
     res.render('welcome'); 
 });
 
+// This tells the server: "When someone visits /register, show them the form"
+app.get('/register', (req, res) => {
+    res.render('register'); 
+});
+
+// Do the same for login
+app.get('/login', (req, res) => {
+    res.render('login');
+});
+
 app.post('/register', async (req, res) => {
     // 1. Destructure the names exactly as they appear in the HTML "name" attributes
     const { fullName, whatsapp, university, department, level, password } = req.body;
